@@ -5,6 +5,8 @@
 | 文档版本 | 1.1 |
 | 日期 | 2026-05-15 |
 | 状态 | 待评审 |
+| 阶段 | **Phase 1**（纯前端阅读器） |
+| 后续阶段 | [Phase 2 平台需求](./2026-05-15-bookview-platform-requirements.md) — Python 后台、PDF 结构存储、知识图谱、Ollama 本地 AI |
 | 关联设计 | [2026-05-15-bookview-design.md](./2026-05-15-bookview-design.md) |
 | 关联任务 | [../plans/2026-05-15-bookview-tasks.md](../plans/2026-05-15-bookview-tasks.md) |
 
@@ -15,6 +17,8 @@
 ### 1.1 背景
 
 用户需要在浏览器中舒适地阅读本地或导入的电子书，并获得接近实体书的翻页与过渡体验。现有纯静态阅读器缺少连贯动效，影响沉浸感。
+
+**说明：** 本文档 **不包含** 后台服务、PDF 结构化存储、知识图谱与 AI；上述能力见 [Phase 2 平台需求](./2026-05-15-bookview-platform-requirements.md)。
 
 ### 1.2 产品目标
 
