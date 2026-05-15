@@ -33,7 +33,7 @@
 
 | 文档 | 说明 |
 |------|------|
-| [数学动画设计](docs/specs/2026-05-16-math-chapter-animation-design.md) | MAS 脚本、章节绑定、AI 生成与 GSAP 播放 |
+| [数学动画设计](docs/specs/2026-05-16-math-chapter-animation-design.md) | **全场景** MAS、Classifier、代数/几何/分析/线代/概率/离散 |
 | [数学动画任务](docs/plans/2026-05-16-math-chapter-animation-tasks.md) | M1–M5 实施步骤 |
 
 ## 技术栈（目标）
