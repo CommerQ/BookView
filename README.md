@@ -29,6 +29,13 @@
 | [平台设计](docs/specs/2026-05-15-bookview-platform-design.md) | PostgreSQL、解析流水线、RAG、图谱 |
 | [平台实施计划](docs/plans/2026-05-15-bookview-platform-tasks.md) | 后台 Task 1–10 |
 
+### 数学章节动画（Phase 2 扩展）
+
+| 文档 | 说明 |
+|------|------|
+| [数学动画设计](docs/specs/2026-05-16-math-chapter-animation-design.md) | MAS 脚本、章节绑定、AI 生成与 GSAP 播放 |
+| [数学动画任务](docs/plans/2026-05-16-math-chapter-animation-tasks.md) | M1–M5 实施步骤 |
+
 ## 技术栈（目标）
 
 - **前端：** React, TypeScript, Vite, GSAP  
