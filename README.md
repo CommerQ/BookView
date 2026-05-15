@@ -38,11 +38,14 @@
 
 ## 技术栈（目标）
 
-- **前端：** React, TypeScript, Vite, GSAP  
+- **前端：** React, TypeScript, Vite  
+- **阅读动效：** GSAP（翻页、路由过渡）  
+- **数学动画：** GSAP 编排 + **KaTeX**（公式）+ **Mafs**（函数/分析/向量）+ **JSXGraph**（几何）+ **D3**（统计分布）— 见 [动画库选型](docs/specs/2026-05-16-math-chapter-animation-design.md#14-开源库选型按功能--直观动效)  
 - **后台：** Python 3.11, FastAPI, Celery, PostgreSQL, pgvector  
 - **文档：** PyMuPDF（PDF）, ebooklib（EPUB）  
 - **AI：** Ollama（本地 chat + embedding）  
-- **图谱：** PostgreSQL 实体/关系表（可演进 Neo4j）
+- **图谱：** PostgreSQL 实体/关系表（可演进 Neo4j）  
+- **可选导出：** Manim（Python 讲解视频）
 
 ## 本地开发（规划）
 

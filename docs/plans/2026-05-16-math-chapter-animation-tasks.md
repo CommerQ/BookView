@@ -1,6 +1,6 @@
 # 数学章节动画 — 实施计划（全场景）
 
-> 设计：[../specs/2026-05-16-math-chapter-animation-design.md](../specs/2026-05-16-math-chapter-animation-design.md)（v1.1 全场景）
+> 设计：[../specs/2026-05-16-math-chapter-animation-design.md](../specs/2026-05-16-math-chapter-animation-design.md)（v1.2，含 §14 库选型）
 
 **Goal:** 全学段、全领域（代数/几何/分析/线代/概率/离散）统一 MAS + Classifier + 分模板 Planner + LayerRegistry 播放。
 
@@ -46,7 +46,9 @@
 
 **Files:** `frontend/src/features/mathAnim/`
 
-- [ ] `LayerRegistry.ts`：按 canvas 键注册层
+- [ ] 安装：`gsap`, `@gsap/react`, `katex`, `mafs`, `jsxgraph`, `d3`
+- [ ] `animation/presets.ts`：fadeUp / strokeDraw / pulse / paramSmooth
+- [ ] `LayerRegistry`：`FormulaLayer`(KaTeX)、`MafsLayer`、`JSXGraphLayer`
 - [ ] `masInterpreter.ts`：解析 `enter` → GSAP
 - [ ] `MathAnimPlayer.tsx`：SceneTabs + Transport
 - [ ] M1 三样例可逐步播放

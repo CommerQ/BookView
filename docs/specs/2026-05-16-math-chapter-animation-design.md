@@ -2,7 +2,7 @@
 
 | 字段 | 值 |
 |------|-----|
-| 文档版本 | 1.1 |
+| 文档版本 | 1.2 |
 | 日期 | 2026-05-16 |
 | 状态 | 待评审 |
 | 范围 | **全场景**（中小学代数 / 几何证明 / 大学分析 / 线代 / 概率统计 / 离散） |
@@ -562,9 +562,116 @@ CREATE TABLE math_animations (
 
 ---
 
-## 14. 修订记录
+## 14. 开源库选型（按功能 + 直观动效）
+
+> **原则：** 数学语义用 **领域库** 画对；「一步步动起来」用 **GSAP** 统一编排；公式一律 **KaTeX**。不采用「AI 直接写动画代码」。
+
+### 14.1 总栈（定案）
+
+| 层级 | 选型 | 作用 |
+|------|------|------|
+| 编排 | **GSAP** + `@gsap/react` | 步进、缓动、描边绘制、`paramTween`、减少动效 |
+| 公式 | **KaTeX** | 所有 `formulas[]`、`matrix` 排版 |
+| 函数/分析直观 | **Mafs** | 坐标系、函数曲线、动点、向量、黎曼和示意 |
+| 几何直观 | **JSXGraph** | 点线圆、辅助线、角标注、尺规作图序列 |
+| 统计图 | **D3**（或 D3 子模块） | 直方图、分布曲线、参数变化 |
+| 公式排版输入（教师编辑） | **MathLive**（可选） | 编辑 MAS 内 LaTeX |
+| 视频导出（可选） | **Manim Community**（Python） | 高质量讲解片，非交互主路径 |
+
+**不采用为主路径：** MathJax（过重）、Desmos API（非开源）、纯自研 SVG 函数引擎（维护成本高）、manim-web（尚早，作观察）。
+
+### 14.2 按 `scene_kind` → 库 + 直观动效手段
+
+| scene_kind | 主库 | GSAP 动效（直观关键） |
+|------------|------|------------------------|
+| `definition_intuition` | KaTeX + Mafs/JSXGraph 其一 | 公式 `fadeUp`；定义后 **延迟 0.3s** 再出图 |
+| `worked_example` | KaTeX | 每步 `transform` 高亮变化项；旧式划掉 `opacity` + 新式 `reveal` |
+| `graph_exploration` | **Mafs** `Plot.OfX` + `useMovablePoint` | **`paramTween`** 扫 `a,b,c`；顶点/零点 **emphasize** 脉冲 |
+| `geometry_proof` | **JSXGraph** | 辅助线 `strokeDraw`；角/边相等 **`mark`** 闪烁；全等三角形 **fill** 淡入 |
+| `construction` | **JSXGraph** | 圆/弧/垂线逐步 `construct`（dashoffset）；尺规步骤与旁白同步 |
+| `limit_proof` | **Mafs** + KaTeX | ε、δ 带 **`paramTween` 带宽**；趋近点沿曲线 **motionPath** |
+| `derivative_tangent` | **Mafs** | 割线绕点旋转 → `paramTween` 使 Δx→0，切线 **`draw`** |
+| `integral_riemann` | **Mafs**（黎曼矩形）或 SVG 条 | **`partition`** 矩形条依次 `reveal`；上限 n 增加 `paramTween` |
+| `vector_operation` | **Mafs** `Vector` | 向量平移 **`paramTween`**；平行四边形法则分步 `sequence` |
+| `matrix_linear_map` | **Mafs** 网格变形 + KaTeX 矩阵 | 单位正方形格子 **`transform2d`**（GSAP matrix 插值） |
+| `distribution_demo` | **D3** 曲线/柱 | μ、σ **`paramTween`** 曲线形变；面积归一化过渡 |
+| `induction` | KaTeX + HTML 框 | 三步框 **`inductionStep`** 高亮切换 |
+| `fallback_generic` | KaTeX | 按 block 顺序 `reveal`，无图时保持节奏感 |
+
+### 14.3 按 MAS 图元 → 实现层
+
+| MAS 图元 | 实现 |
+|----------|------|
+| `formulas[]` | KaTeX；`highlight` 用 CSS 背景 + GSAP `emphasize` |
+| `transform` | 两步 LaTeX 交叉 `morph`（opacity 切换，避免复杂 LaTeX morph） |
+| `graph.function` | Mafs `Plot.OfX` / `Plot.Parametric` |
+| `graph.numberLine` | Mafs `MovablePoint` on 数轴或轻量 SVG |
+| `graph.geometry` | JSXGraph `board.create('point'|'segment'|'circle',...)` |
+| `geometry.proof` | JSXGraph + HTML 侧栏 given/prove |
+| `limitviz` | Mafs 不等式带 + 动点 |
+| `integral.area` | Mafs 黎曼组件或 D3 area |
+| `vector[]` | Mafs `Vector` |
+| `matrix` | KaTeX `bmatrix` |
+| `transform2d` | Mafs 点阵经 2×2 矩阵变换（GSAP 插值矩阵元素） |
+| `chart.*` / `distribution` | D3 `line` / `rect` |
+| `sequence` / `induction` | React 组件 + GSAP |
+
+### 14.4 「直观」统一规范（动效预设）
+
+所有场景共享 **BookView Motion Presets**（`animation/presets.ts`），避免每页观感杂乱：
+
+| 预设 | GSAP 参数 | 用于 |
+|------|-----------|------|
+| `fadeUp` | `y: 12→0, opacity: 0→1, 0.45s power2.out` | 公式、说明 |
+| `strokeDraw` | `strokeDashoffset` 动画 | 线、圆、曲线 |
+| `pulse` | `scale 1→1.05→1` | 强调项、顶点 |
+| `paramSmooth` | `0.8s power2.inOut` | 参数变化 |
+| `stepPause` | 步间 `0.25s` 空白 | 认知缓冲 |
+
+`prefers-reduced-motion`：预设时长置 0，保留分步换屏。
+
+### 14.5 与 MAS 解释器集成方式
+
+```
+MathAnimPlayer
+  → masInterpreter (enter ops → GSAP timeline)
+  → LayerRegistry
+       ├── FormulaLayer      → KaTeX
+       ├── MafsLayer         → 函数/极限/积分/向量
+       ├── JSXGraphLayer     → 几何/作图
+       ├── D3ChartLayer      → 概率统计
+       └── GenericHtmlLayer  → 归纳框、表格
+```
+
+每个 Layer 暴露：`mount(canvasState)`、`applyOp(op)`、`seek(stepIndex)`，供 Interpreter 统一调度。
+
+### 14.6 后端（生成侧）配套
+
+| 功能 | 库 | 说明 |
+|------|-----|------|
+| LaTeX 校验 | `pylatexenc` 或调用前端 KaTeX WASM | 生成后校验 |
+| 视频导出 | **Manim** | `POST /animations/{id}/export-mp4`，与 MAS 并行，非替代 Player |
+| 几何坐标粗算 | `sympy`（可选） | 辅助 Classifier 判断图形类型 |
+
+### 14.7 依赖清单（frontend/package.json 目标）
+
+```json
+{
+  "gsap": "^3.12",
+  "@gsap/react": "^2.1",
+  "katex": "^0.16",
+  "mafs": "^0.21",
+  "jsxgraph": "^1.12",
+  "d3": "^7.9"
+}
+```
+
+---
+
+## 15. 修订记录
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
 | 1.0 | 2026-05-16 | 初稿 |
-| 1.1 | 2026-05-16 | 全场景：领域分类、13 类 scene_kind、图元表、Classifier、分模板 Planner、M1–M6 |
+| 1.1 | 2026-05-16 | 全场景 |
+| 1.2 | 2026-05-16 | §14 开源库选型：KaTeX + Mafs + JSXGraph + D3 + GSAP |
