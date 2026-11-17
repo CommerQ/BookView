@@ -9,7 +9,7 @@
 | **Phase 1** | 纯前端 EPUB 阅读器（IndexedDB，无后台） | 见下表「阅读器」 |
 | **Phase 2** | FastAPI 后台、PDF 结构入库、知识图谱、Ollama 本地模型 | 见下表「平台」 |
 
-> 当前 GitHub 仓库 **尚无应用代码**，仅有规格说明；Phase 1 与 Phase 2 可并行或先 2a 再对接前端。
+> Phase 1 前端代码位于 [`frontweb/`](frontweb)，后台尚未实现；Phase 1 与 Phase 2 可并行或先 2a 再对接前端。
 
 ## 文档
 
@@ -53,5 +53,5 @@
 docker compose up -d postgres redis
 # 可选：docker compose --profile ai up -d ollama
 cd backend && uvicorn app.main:app --reload
-cd frontend && npm run dev
+cd frontweb && npm run dev
 ```
